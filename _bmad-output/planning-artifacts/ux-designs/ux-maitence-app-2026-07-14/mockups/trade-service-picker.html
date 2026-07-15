@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Key Screen — Trade/Service Picker (Contractor onboarding)</title>
+<style>
+/*
+  Governs: EXPERIENCE.md § Information Architecture (Trade/Service Selection),
+  § Component Patterns (Trade/Service Picker), § State Patterns (Unverified
+  Contractor). DESIGN.md § Components (Trade/Service Picker), § Colors
+  (trust-colored selected chips). Newly-designed component flagged by the
+  Reviewer Gate as needing a visual spec — this mock is that spec's first pass.
+  Two steps shown side by side: Trade selection (left, Phase-1 subset only)
+  and Service search within a selected Trade (right).
+*/
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #E9E4D8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex; gap: 32px; justify-content: center; padding: 40px 16px; flex-wrap: wrap;
+}
+.frame {
+  width: 390px; background: #FFF9F2; border-radius: 20px; border: 1px solid #23252B;
+  overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+.browser-bar { background: #23252B; color: #FFF9F2; font-size: 11px; padding: 8px 14px; font-family: Inter, sans-serif; }
+.content { padding: 20px; }
+.step { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #6B6558; margin-bottom: 6px; }
+.title { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; font-size: 22px; font-weight: 700; color: #23252B; margin-bottom: 16px; }
+.trade-row {
+  display: flex; align-items: center; gap: 12px;
+  background: #FFFFFF; border: 1px solid #ECE6DA; border-radius: 14px;
+  padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(35,37,43,0.06);
+}
+.trade-row.selected { border-color: #0B7A70; }
+.checkbox {
+  width: 20px; height: 20px; border-radius: 6px; border: 2px solid #6B6558; flex-shrink: 0;
+}
+.checkbox.checked { background: #0B7A70; border-color: #0B7A70; position: relative; }
+.checkbox.checked::after {
+  content: ''; position: absolute; left: 6px; top: 2px; width: 5px; height: 9px;
+  border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.trade-name { font-family: Inter, sans-serif; font-size: 15px; font-weight: 500; color: #23252B; }
+.helper { font-family: Inter, sans-serif; font-size: 13px; color: #6B6558; margin-top: 16px; margin-bottom: 20px; line-height: 1.5; }
+.search-input {
+  background: #FFFFFF; border: 1px solid #ECE6DA; border-radius: 9999px;
+  padding: 10px 16px; font-family: Inter, sans-serif; font-size: 14px; color: #6B6558;
+  margin-bottom: 14px;
+}
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.chip {
+  background: #0B7A70; color: #FFFFFF; font-family: Inter, sans-serif;
+  font-size: 13px; font-weight: 500; border-radius: 9999px; padding: 6px 14px;
+}
+.service-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 4px; border-bottom: 1px solid #ECE6DA;
+  font-family: Inter, sans-serif; font-size: 14px; color: #23252B;
+}
+.btn-primary {
+  width: 100%; background: #C2410C; color: #FFFFFF; border: none;
+  border-radius: 9999px; padding: 14px; font-family: Inter, sans-serif;
+  font-size: 15px; font-weight: 600; margin-top: 8px;
+}
+.caption { font-family: Inter, sans-serif; font-size: 12px; color: #6B6558; text-align: center; width: 100%; margin-top: -12px; }
+</style>
+</head>
+<body>
+  <div>
+    <div class="frame">
+      <div class="browser-bar">🔒 app.example.com/onboarding</div>
+      <div class="content">
+        <div class="step">Step 1 of 2</div>
+        <div class="title">Which trades do you offer?</div>
+
+        <div class="trade-row selected">
+          <div class="checkbox checked"></div>
+          <div class="trade-name">Plumbing</div>
+        </div>
+        <div class="trade-row">
+          <div class="checkbox"></div>
+          <div class="trade-name">Electrical</div>
+        </div>
+        <div class="trade-row">
+          <div class="checkbox"></div>
+          <div class="trade-name">HVAC</div>
+        </div>
+
+        <div class="helper">That's the full list for now — we're starting focused. More trades are coming.</div>
+        <button class="btn-primary">Continue</button>
+      </div>
+    </div>
+    <div class="caption">Step 1 — Phase-1 subset only, never the full taxonomy</div>
+  </div>
+
+  <div>
+    <div class="frame">
+      <div class="browser-bar">🔒 app.example.com/onboarding</div>
+      <div class="content">
+        <div class="step">Step 2 of 2 · Plumbing</div>
+        <div class="title">Which services?</div>
+
+        <input class="search-input" value="Search Plumbing services…" readonly>
+
+        <div class="chip-row">
+          <span class="chip">Leak repair</span>
+          <span class="chip">Water heaters</span>
+          <span class="chip">Drain cleaning</span>
+        </div>
+
+        <div class="service-row">☑ Leak repair</div>
+        <div class="service-row">☑ Water heaters</div>
+        <div class="service-row">☑ Drain cleaning</div>
+        <div class="service-row">☐ Pipe replacement</div>
+        <div class="service-row">☐ Fixtures</div>
+
+        <button class="btn-primary">Save and continue</button>
+      </div>
+    </div>
+    <div class="caption">Step 2 — search-first within one Trade; selected chips reuse the trust color</div>
+  </div>
+</body>
+</html>

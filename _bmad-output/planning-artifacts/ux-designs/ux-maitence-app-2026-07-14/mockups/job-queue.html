@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Key Screen — Job Queue (Contractor, phone browser)</title>
+<style>
+/*
+  Governs: EXPERIENCE.md § Information Architecture (Job Queue),
+  § Component Patterns (Lead Card, Accept action, Cold Lead filter toggle),
+  § State Patterns (Emergency Lead arrival, Empty Job Queue),
+  § Responsive & Platform (< md, phone browser — first-class per UJ-3),
+  § Key Flows (UJ-3). DESIGN.md § Components (Lead Card, Emergency Badge),
+  § Elevation & Depth (default shadow fix), § Colors.
+  Two states shown side by side: collapsed queue (left) and one expanded
+  Lead Card (right) — both load-bearing per Component Patterns.
+*/
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #E9E4D8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  padding: 40px 16px;
+  flex-wrap: wrap;
+}
+.frame {
+  width: 390px;
+  background: #FFF9F2; /* surface-base */
+  border-radius: 20px;
+  border: 1px solid #23252B;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+.browser-bar {
+  background: #23252B; color: #FFF9F2;
+  font-size: 11px; padding: 8px 14px;
+  font-family: Inter, sans-serif;
+}
+.content { padding: 16px; }
+.header-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+}
+.title {
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-size: 20px; font-weight: 700; color: #23252B;
+}
+.toggle {
+  font-family: Inter, sans-serif; font-size: 13px; font-weight: 500;
+  color: #6B6558; /* inactive */
+}
+.toggle strong { color: #23252B; } /* active */
+.count { font-family: Inter, sans-serif; font-size: 14px; color: #6B6558; margin-bottom: 12px; }
+
+.lead-card {
+  background: #FFFFFF;
+  border: 1px solid #ECE6DA;
+  border-radius: 14px; /* rounded.md */
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(35,37,43,0.07); /* default shadow */
+  margin-bottom: 12px;
+  position: relative;
+}
+.badge-emergency {
+  display: inline-block;
+  background: #C43A2E; color: #FFFFFF;
+  font-family: Inter, sans-serif; font-size: 11px; font-weight: 600;
+  border-radius: 9999px; padding: 3px 10px;
+  margin-bottom: 8px;
+}
+.lead-top { display: flex; justify-content: space-between; align-items: baseline; }
+.lead-trade { font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; color: #23252B; }
+.lead-quality { font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; color: #0B7A70; }
+.lead-meta { font-family: Inter, sans-serif; font-size: 13px; color: #6B6558; margin-top: 4px; }
+
+.expanded-card {
+  background: #FFFFFF; border: 1px solid #ECE6DA; border-radius: 20px;
+  padding: 18px; box-shadow: 0 8px 24px rgba(35,37,43,0.14); /* stronger, "on top" shadow */
+}
+.expanded-header { display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px; }
+.media-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.media-thumb { width: 56px; height: 56px; border-radius: 8px; background: linear-gradient(135deg,#D8D0C0,#C7BEA9); }
+.diagnosis-snippet {
+  font-family: Inter, sans-serif; font-size: 14px; color: #23252B; line-height: 1.5;
+  background: #F5EFE3; border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;
+}
+.budget-line { font-family: Inter, sans-serif; font-size: 13px; color: #6B6558; margin-bottom: 16px; }
+.btn-accept {
+  width: 100%; background: #C2410C; color: #FFFFFF; border: none;
+  border-radius: 9999px; padding: 14px; font-family: Inter, sans-serif;
+  font-size: 15px; font-weight: 600;
+}
+.caption { font-family: Inter, sans-serif; font-size: 12px; color: #6B6558; text-align:center; width: 100%; margin-top: -12px; }
+</style>
+</head>
+<body>
+  <div>
+    <div class="frame">
+      <div class="browser-bar">🔒 app.example.com/queue</div>
+      <div class="content">
+        <div class="header-row">
+          <div class="title">Job Queue</div>
+          <div class="toggle"><strong>Qualified</strong> · Cold</div>
+        </div>
+        <div class="count">3 leads waiting.</div>
+
+        <div class="lead-card">
+          <div class="badge-emergency">Emergency</div>
+          <div class="lead-top">
+            <div class="lead-trade">Plumbing · Water heaters</div>
+            <div class="lead-quality">Strong match</div>
+          </div>
+          <div class="lead-meta">Submitted 4 min ago</div>
+        </div>
+
+        <div class="lead-card">
+          <div class="lead-top">
+            <div class="lead-trade">Electrical · Outlet install</div>
+            <div class="lead-quality">Strong match</div>
+          </div>
+          <div class="lead-meta">Submitted 1 hr ago</div>
+        </div>
+
+        <div class="lead-card">
+          <div class="lead-top">
+            <div class="lead-trade">HVAC · AC repair</div>
+            <div class="lead-quality">Good match</div>
+          </div>
+          <div class="lead-meta">Submitted 3 hrs ago</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Collapsed queue — Emergency Badge always visible, zero taps</div>
+  </div>
+
+  <div>
+    <div class="frame" style="padding: 16px;">
+      <div class="expanded-card">
+        <div class="expanded-header">
+          <div class="badge-emergency" style="margin-bottom:0;">Emergency</div>
+          <div class="lead-quality">Strong match</div>
+        </div>
+        <div class="lead-trade" style="margin-bottom: 10px;">Plumbing · Water heaters</div>
+        <div class="media-row">
+          <div class="media-thumb"></div>
+          <div class="media-thumb"></div>
+          <div class="media-thumb"></div>
+        </div>
+        <div class="diagnosis-snippet">AI Diagnosis: likely a failed pressure relief valve or tank corrosion.</div>
+        <div class="budget-line">Homeowner budget: $800–$1,200 · realistic for this job</div>
+        <button class="btn-accept">Accept</button>
+      </div>
+    </div>
+    <div class="caption">Expanded in place — Accept is one tap from here</div>
+  </div>
+</body>
+</html>

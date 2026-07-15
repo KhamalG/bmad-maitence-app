@@ -1,0 +1,1069 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint: AI Lead-Intake Platform — Brainstorm Session</title>
+<style>
+  :root{
+    --paper:#eee7d8;
+    --paper-2:#e4dcc8;
+    --grid-line: rgba(30,58,95,0.10);
+    --grid-line-strong: rgba(30,58,95,0.16);
+    --ink:#182c40;
+    --ink-soft:#3c5875;
+    --ink-faint:#6d859c;
+    --accent:#2f6fb3;
+    --accent-2:#c97a2b;
+    --hope:#3f7d4f;
+    --fear:#b3432b;
+    --hat-white:#8a8a86;
+    --hat-red:#b3432b;
+    --hat-yellow:#a8791b;
+    --hat-black:#2b2b2b;
+    --hat-green:#3f7d4f;
+    --hat-blue:#2f6fb3;
+    --must:#b3432b;
+    --should:#a8791b;
+    --could:#2f6fb3;
+    --wont:#6d859c;
+    --card-bg: rgba(255,255,255,0.55);
+    --card-border: rgba(24,44,64,0.22);
+    --stamp: #b3432b;
+    --shadow: 0 6px 18px rgba(24,44,64,0.12);
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#0b2138;
+      --paper-2:#0e2740;
+      --grid-line: rgba(150,210,255,0.09);
+      --grid-line-strong: rgba(150,210,255,0.16);
+      --ink:#dff1ff;
+      --ink-soft:#a9c8de;
+      --ink-faint:#729ab8;
+      --accent:#6fb3f2;
+      --accent-2:#f2a75c;
+      --hope:#7ed19a;
+      --fear:#f28b6f;
+      --hat-white:#cfd3d6;
+      --hat-red:#f28b6f;
+      --hat-yellow:#f2c94c;
+      --hat-black:#c9ccce;
+      --hat-green:#7ed19a;
+      --hat-blue:#6fb3f2;
+      --must:#f28b6f;
+      --should:#f2c94c;
+      --could:#6fb3f2;
+      --wont:#729ab8;
+      --card-bg: rgba(15,35,55,0.55);
+      --card-border: rgba(160,210,255,0.22);
+      --stamp: #f28b6f;
+      --shadow: 0 6px 24px rgba(0,0,0,0.4);
+    }
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    padding:0;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(var(--grid-line-strong) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line-strong) 1px, transparent 1px);
+    background-size: 18px 18px, 18px 18px, 90px 90px, 90px 90px;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height:1.55;
+    overflow-x:hidden;
+    max-width:100vw;
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding: 0 20px 120px; }
+
+  a{ color:inherit; }
+
+  /* ---------- shared bits ---------- */
+  .kicker{
+    font-family: var(--mono);
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:.72rem;
+    color: var(--ink-faint);
+  }
+  .sheet-title{
+    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    margin:.2em 0 .1em;
+    font-weight:800;
+    letter-spacing:-0.01em;
+  }
+  .sheet-sub{
+    color: var(--ink-soft);
+    max-width: 64ch;
+    font-size:.98rem;
+  }
+  section.sheet{
+    position:relative;
+    margin-top:64px;
+    padding-top:28px;
+    border-top: 1px dashed var(--ink-faint);
+  }
+  section.sheet::before{
+    content: attr(data-num) " / " attr(data-code);
+    position:absolute;
+    top:-11px;
+    left:0;
+    background: var(--paper);
+    padding: 0 10px 0 0;
+    font-family: var(--mono);
+    font-size:.72rem;
+    letter-spacing:.1em;
+    color: var(--ink-faint);
+  }
+  .corner-tick{
+    position:absolute;
+    top:-11px; right:0;
+    background: var(--paper);
+    padding: 0 0 0 10px;
+    font-family: var(--mono);
+    font-size:.65rem;
+    color: var(--ink-faint);
+    letter-spacing:.06em;
+  }
+  .reveal{
+    opacity:0;
+    transform: translateY(14px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.in{
+    opacity:1;
+    transform:none;
+  }
+
+  /* ---------- hero ---------- */
+  header.hero{
+    padding: 56px 20px 40px;
+    max-width:1080px;
+    margin:0 auto;
+    position:relative;
+  }
+  .title-block{
+    border: 2px solid var(--ink);
+    border-radius:2px;
+    padding: 22px 24px 18px;
+    background: var(--card-bg);
+    backdrop-filter: blur(2px);
+    box-shadow: var(--shadow);
+    position:relative;
+  }
+  .title-block::after{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border:1px solid var(--card-border);
+    pointer-events:none;
+  }
+  .title-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 10px 28px;
+    align-items:baseline;
+    justify-content:space-between;
+  }
+  h1.session-title{
+    font-size: clamp(1.7rem, 4vw, 2.6rem);
+    margin:.15em 0 .1em;
+    font-weight:800;
+    letter-spacing:-0.02em;
+  }
+  .meta-grid{
+    margin-top:16px;
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+    gap:10px 18px;
+    font-family: var(--mono);
+    font-size:.78rem;
+    color: var(--ink-soft);
+    border-top:1px dashed var(--card-border);
+    padding-top:12px;
+  }
+  .meta-grid b{ color: var(--ink); display:block; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint);}
+  .stamp-complete{
+    position:absolute;
+    top:14px; right:14px;
+    border:3px solid var(--stamp);
+    color: var(--stamp);
+    font-family: var(--mono);
+    font-weight:800;
+    font-size:.7rem;
+    letter-spacing:.12em;
+    padding:6px 10px;
+    transform: rotate(8deg);
+    border-radius:3px;
+    opacity:.85;
+    background: color-mix(in srgb, var(--stamp) 6%, transparent);
+  }
+  .goal-line{
+    margin-top:14px;
+    font-size:.95rem;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- role play ---------- */
+  .stakeholder-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap:20px;
+    margin-top:22px;
+  }
+  .ticket{
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius:10px;
+    box-shadow: var(--shadow);
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .ticket::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:10px;
+    background-image: radial-gradient(circle, var(--paper) 3px, transparent 3.5px);
+    background-size: 10px 14px;
+    background-position: -1px 0;
+  }
+  .ticket-head{
+    padding:16px 18px 12px 24px;
+    border-bottom:1px dashed var(--card-border);
+  }
+  .ticket-role{
+    font-family: var(--mono);
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    font-size:.68rem;
+    color: var(--ink-faint);
+  }
+  .ticket-name{
+    font-size:1.25rem;
+    font-weight:800;
+    margin-top:2px;
+  }
+  .ticket-body{ padding: 12px 18px 18px 24px; flex:1; }
+  .col-label{
+    font-family: var(--mono);
+    font-size:.68rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    margin: 12px 0 6px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .col-label.hope{ color: var(--hope); }
+  .col-label.fear{ color: var(--fear); }
+  .col-label .dot{ width:8px; height:8px; border-radius:50%; background:currentColor; display:inline-block; }
+  ul.plain{ list-style:none; margin:0; padding:0; }
+  ul.plain li{
+    padding: 5px 0 5px 16px;
+    position:relative;
+    font-size:.9rem;
+    color: var(--ink-soft);
+  }
+  ul.plain li::before{
+    content:"—";
+    position:absolute; left:0; top:5px;
+    color: var(--ink-faint);
+  }
+  .signals-strip{
+    margin-top:20px;
+    background: var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:10px;
+    padding:16px 20px;
+    box-shadow: var(--shadow);
+  }
+  .signals-strip .col-label{ margin-top:0; }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .chip{
+    font-size:.78rem;
+    font-family: var(--mono);
+    padding:5px 10px;
+    border-radius:5px;
+    border:1px solid var(--card-border);
+    background: var(--paper-2);
+    color: var(--ink-soft);
+  }
+
+  /* ---------- six hats ---------- */
+  .hats-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap:18px;
+    margin-top:24px;
+  }
+  .hat-card{
+    border-radius:10px;
+    padding:16px 18px 18px;
+    background: var(--card-bg);
+    border:1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    border-top: 6px solid var(--hat-color);
+  }
+  .hat-head{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .hat-disc{
+    width:22px; height:22px; border-radius:50%;
+    background: var(--hat-color);
+    flex:none;
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.12);
+  }
+  .hat-name{ font-weight:800; font-size:1.02rem; }
+  .hat-sub{ font-family:var(--mono); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); }
+  .hat-card ul.plain li::before{ color: var(--hat-color); content:"▸"; }
+
+  /* ---------- JTBD depth gauge ---------- */
+  .jtbd-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+    gap:28px;
+    margin-top:26px;
+  }
+  .gauge{
+    background: var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:10px;
+    box-shadow: var(--shadow);
+    padding:18px 20px 22px;
+  }
+  .gauge-title{ font-weight:800; font-size:1.05rem; margin-bottom:2px; }
+  .gauge-sub{ font-family:var(--mono); font-size:.68rem; color:var(--ink-faint); letter-spacing:.06em; text-transform:uppercase; margin-bottom:14px;}
+  .layer{
+    position:relative;
+    border-left: 3px solid var(--accent);
+    padding: 10px 0 10px 16px;
+    margin-bottom:4px;
+  }
+  .layer + .layer{ margin-top:2px; }
+  .layer .depth-label{
+    font-family:var(--mono);
+    font-size:.65rem;
+    color: var(--ink-faint);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .layer p{ margin:.25em 0 0; font-size:.92rem; color:var(--ink-soft); }
+  .layer.l1{ margin-left:0; }
+  .layer.l2{ margin-left:16px; border-color: var(--accent-2); }
+  .layer.l3{ margin-left:32px; border-color: var(--fear); }
+  .note-tab{
+    margin-top:16px;
+    font-size:.82rem;
+    font-style:italic;
+    color: var(--ink-faint);
+    border-top:1px dashed var(--card-border);
+    padding-top:10px;
+  }
+
+  /* ---------- what if / detonation ---------- */
+  .blast-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap:20px;
+    margin-top:24px;
+  }
+  .blast-card{
+    position:relative;
+    background: var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 22px 18px 18px;
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .blast-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0; height:4px;
+    background: repeating-linear-gradient(90deg, var(--accent-2) 0 8px, transparent 8px 14px);
+  }
+  .spark{
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:10px;
+  }
+  .spark svg{ width:100%; height:100%; }
+  .blast-what-if{
+    font-family:var(--mono);
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color: var(--accent-2);
+    margin-bottom:4px;
+  }
+  .blast-title{ font-weight:800; font-size:1.05rem; margin-bottom:6px;}
+  .blast-card p{ font-size:.92rem; color:var(--ink-soft); margin:0; }
+
+  /* ---------- time horizon ladder ---------- */
+  .ladder-wrap{
+    margin-top:30px;
+    display:flex;
+    justify-content:center;
+  }
+  .ladder{
+    position:relative;
+    width:100%;
+    max-width:720px;
+    padding: 10px 0 0;
+  }
+  .rail{
+    position:absolute;
+    left:50%; top:0; bottom:0;
+    width:6px;
+    transform:translateX(-50%);
+    background: linear-gradient(to top, var(--ink-faint), transparent 96%);
+    border-radius:3px;
+    opacity:.4;
+  }
+  .rung{
+    position:relative;
+    display:grid;
+    grid-template-columns: 1fr 46px 1fr;
+    align-items:center;
+    gap:14px;
+    margin-bottom: 34px;
+  }
+  .rung:last-child{ margin-bottom:6px; }
+  .rung-step{
+    width:46px; height:46px; border-radius:50%;
+    background: var(--card-bg);
+    border:2px solid var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-weight:800; font-size:.7rem;
+    color:var(--accent);
+    box-shadow: var(--shadow);
+  }
+  .rung-card{
+    background: var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:10px;
+    padding:14px 16px;
+    box-shadow: var(--shadow);
+  }
+  .rung:nth-child(odd) .rung-card.left{ visibility:visible; }
+  .rung-card.empty{ background:transparent; border:none; box-shadow:none; }
+  .rung-label{ font-family:var(--mono); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); }
+  .rung-title{ font-weight:800; margin:.15em 0 4px; }
+  .rung-card p{ margin:0; font-size:.88rem; color:var(--ink-soft); }
+  .rung.mvp .rung-step{ border-color: var(--hope); color:var(--hope); }
+  .rung.y100 .rung-step{ border-color: var(--fear); color: var(--fear); }
+  .rung.y100 .rung-card{ background: linear-gradient(180deg, var(--card-bg), transparent); }
+
+  @media (max-width: 620px){
+    .rung{ grid-template-columns: 40px 1fr; }
+    .rung-step{ width:40px; height:40px; font-size:.6rem; }
+    .rung > .rung-card.left{ display:none; }
+    .rail{ left:20px; }
+  }
+
+  /* ---------- convergence moscow ---------- */
+  .moscow-legend{
+    display:flex; flex-wrap:wrap; gap:14px;
+    margin: 20px 0 6px;
+    font-family:var(--mono); font-size:.72rem; letter-spacing:.05em;
+  }
+  .moscow-legend span{ display:flex; align-items:center; gap:6px; color:var(--ink-soft); }
+  .moscow-legend .sw{ width:10px; height:10px; border-radius:2px; }
+  .cluster{
+    margin-top:18px;
+    background: var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:10px;
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .cluster-head{
+    padding:12px 18px;
+    font-weight:800;
+    border-bottom:1px dashed var(--card-border);
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  }
+  .cluster-head .idx{ font-family:var(--mono); color:var(--ink-faint); font-weight:400; font-size:.8rem; margin-right:8px;}
+  .moscow-rows{ display:grid; grid-template-columns: 90px 1fr; }
+  .moscow-rows > div{ border-top:1px solid var(--card-border); padding:10px 16px; }
+  .moscow-rows > div:nth-child(2n-1){
+    font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; font-weight:700;
+    display:flex; align-items:center;
+  }
+  .moscow-rows > div:first-child{ border-top:none; }
+  .moscow-rows > div:nth-child(2){ border-top:none; }
+  .tag-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    font-size:.82rem;
+    padding:5px 10px;
+    border-radius:5px;
+    background: var(--paper-2);
+    border:1px solid var(--card-border);
+    color: var(--ink-soft);
+  }
+  .row-must > div:first-child{ color:var(--must); }
+  .row-should > div:first-child{ color:var(--should); }
+  .row-could > div:first-child{ color:var(--could); }
+  .row-wont > div:first-child{ color:var(--wont); }
+  @media (max-width:560px){
+    .moscow-rows{ grid-template-columns: 1fr; }
+    .moscow-rows > div:nth-child(2n-1){ padding-bottom:2px; }
+    .moscow-rows > div:nth-child(2n){ padding-top:2px; }
+  }
+
+  /* ---------- synthesis climax ---------- */
+  .synthesis{
+    margin-top:70px;
+    padding: 46px 26px 50px;
+    border: 2px solid var(--ink);
+    border-radius:14px;
+    background: radial-gradient(ellipse at top, var(--card-bg), var(--paper-2));
+    box-shadow: var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .synthesis::before{
+    content:"";
+    position:absolute; inset:8px;
+    border:1px solid var(--card-border);
+    border-radius:10px;
+    pointer-events:none;
+  }
+  .synth-kicker{
+    text-align:center;
+    font-family:var(--mono);
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    font-size:.75rem;
+    color: var(--accent);
+  }
+  .synth-title{
+    text-align:center;
+    font-size:clamp(1.5rem,3.4vw,2.3rem);
+    font-weight:800;
+    margin:.2em 0 .3em;
+  }
+  .converge-diagram{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:18px;
+    max-width:760px;
+    margin: 26px auto 6px;
+  }
+  .node{
+    background: var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:10px;
+    padding:16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .node .tiny{ font-family:var(--mono); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint);}
+  .node h4{ margin:.2em 0 6px; font-size:1rem; }
+  .node p{ margin:0; font-size:.88rem; color:var(--ink-soft); }
+  .converge-arrows{
+    grid-column: 1 / -1;
+    display:flex;
+    justify-content:center;
+    padding: 4px 0;
+  }
+  .converge-arrows svg{ width:min(320px, 70%); height:auto; opacity:.55; }
+  .flywheel{
+    grid-column: 1 / -1;
+    text-align:center;
+    background: linear-gradient(180deg, var(--card-bg), transparent);
+    border:2px dashed var(--accent);
+    border-radius:12px;
+    padding: 18px 20px 20px;
+  }
+  .flywheel .tiny{ font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); }
+  .flywheel h3{ margin:.2em 0 8px; font-size:1.25rem; }
+  .flywheel p{ margin:0 auto; max-width:60ch; font-size:.92rem; color:var(--ink-soft); }
+
+  .core-tension{
+    margin: 34px auto 0;
+    max-width: 720px;
+    text-align:center;
+  }
+  .core-tension .tiny{ font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--fear);}
+  blockquote{
+    margin: 10px 0 0;
+    font-size: clamp(1.05rem,2vw,1.3rem);
+    font-weight:700;
+    line-height:1.5;
+    color: var(--ink);
+  }
+  .approved-stamp{
+    display:inline-block;
+    margin-top:22px;
+    border:3px solid var(--hope);
+    color:var(--hope);
+    font-family:var(--mono);
+    font-weight:800;
+    letter-spacing:.1em;
+    font-size:.72rem;
+    padding:7px 14px;
+    border-radius:4px;
+    transform: rotate(-4deg);
+  }
+
+  footer{
+    max-width:1080px;
+    margin: 60px auto 0;
+    padding: 18px 20px 40px;
+    text-align:center;
+    font-family:var(--mono);
+    font-size:.7rem;
+    color: var(--ink-faint);
+    letter-spacing:.05em;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="title-block">
+    <div class="stamp-complete">SESSION<br>COMPLETE</div>
+    <div class="kicker">Brainstorming Log · Blueprint Rendering</div>
+    <h1 class="session-title">AI-Powered Lead-Intake Platform</h1>
+    <div class="goal-line">Connecting homeowners and contractors through photo/video AI analysis, cost estimation, and a contractor admin dashboard — a working session to flesh out the diagnosis engine, the trust problem, the business model, and the path to an MVP.</div>
+    <div class="meta-grid">
+      <div><b>Topic</b>AI lead intake platform (Phase 1)</div>
+      <div><b>Mode</b>Facilitator-led</div>
+      <div><b>Status</b>Complete</div>
+      <div><b>Updated</b>2026-07-13 · 23:40</div>
+      <div><b>Techniques run</b>6</div>
+      <div><b>Target</b>MVP live in 6 months</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 1. ROLE PLAYING -->
+  <section class="sheet reveal" data-num="01" data-code="ROLE PLAYING">
+    <span class="corner-tick">SCALE — 1:1 HUMAN</span>
+    <div class="kicker">Technique 01</div>
+    <div class="sheet-title">Stepping into three pairs of shoes</div>
+    <div class="sheet-sub">Before designing anything, the session inhabited the people who'll actually touch the product — what they hope for, and what would make them quietly stop trusting it.</div>
+
+    <div class="stakeholder-grid">
+      <div class="ticket">
+        <div class="ticket-head">
+          <div class="ticket-role">Stakeholder · 01</div>
+          <div class="ticket-name">The Homeowner</div>
+        </div>
+        <div class="ticket-body">
+          <div class="col-label hope"><span class="dot"></span>Hopes</div>
+          <ul class="plain">
+            <li>Finds contractors that fit their budget without shopping blind</li>
+            <li>AI pre-diagnosis saves money and time on in-person consults</li>
+            <li>Discovers a reliable contractor, becomes a repeat customer</li>
+            <li>Gets a preliminary problem guess before the contractor even arrives</li>
+          </ul>
+          <div class="col-label fear"><span class="dot"></span>Fears</div>
+          <ul class="plain">
+            <li>The AI misdiagnoses the issue, eroding trust in the whole platform</li>
+            <li>Gap between the AI's guess-estimate and the final quote feels misleading</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head">
+          <div class="ticket-role">Stakeholder · 02</div>
+          <div class="ticket-name">The Contractor</div>
+        </div>
+        <div class="ticket-body">
+          <div class="col-label hope"><span class="dot"></span>Hopes</div>
+          <ul class="plain">
+            <li>An affordable virtual admin — streamlines intake without hiring staff</li>
+            <li>No more managing requests and fielding calls all day</li>
+            <li>AI pre-estimate lets them judge job fit before an in-person visit</li>
+          </ul>
+          <div class="col-label fear"><span class="dot"></span>Fears</div>
+          <ul class="plain">
+            <li>Cold or unserious leads waste their time and sour them on the platform</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head">
+          <div class="ticket-role">Stakeholder · 03</div>
+          <div class="ticket-name">The Admin / Dashboard User</div>
+        </div>
+        <div class="ticket-body">
+          <div class="col-label hope"><span class="dot"></span>Hopes</div>
+          <ul class="plain">
+            <li>Jobs live in a queue of cards — key details at a glance, click to expand full detail, photos, video</li>
+          </ul>
+          <div class="col-label fear"><span class="dot"></span>Fears</div>
+          <ul class="plain">
+            <li>Information overload on the card/detail view makes decisions harder, not easier</li>
+            <li>Too many steps or clicks to accept a job causes friction and headaches</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="signals-strip">
+      <div class="col-label" style="color:var(--accent)"><span class="dot"></span>Cross-cutting notes surfaced while role-playing</div>
+      <ul class="plain">
+        <li>Trust has to run both directions — contractors need a way to identify reliable, serious customers too, not just the reverse</li>
+        <li>Lead quality reads off two signals: how much detail is provided (photos/video/description depth), and whether the stated budget is realistic for the job</li>
+        <li>Budget mismatch has two very different causes: the customer doesn't know market pricing (educate them) vs. they're intentionally lowballing (a bad-fit signal for the contractor)</li>
+        <li>Platform is multi-trade long-term, but Phase 1 deliberately narrows to a defined subset of trades</li>
+        <li>Pricing will be tiered: lower tiers self-manage the dashboard; higher tiers get dedicated admin staff and premium features</li>
+      </ul>
+      <div class="chip-row">
+        <span class="chip">reciprocal trust signal</span>
+        <span class="chip">detail completeness</span>
+        <span class="chip">budget realism</span>
+        <span class="chip">phase-1 trade scope</span>
+        <span class="chip">tiered pricing</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. SIX THINKING HATS -->
+  <section class="sheet reveal" data-num="02" data-code="SIX THINKING HATS">
+    <span class="corner-tick">FULL SPECTRUM SCAN</span>
+    <div class="kicker">Technique 02</div>
+    <div class="sheet-title">Six lenses, one idea</div>
+    <div class="sheet-sub">Running the same platform concept through six deliberately different modes of thinking — facts, feelings, upside, downside, fresh ideas, and process — to surface what any single lens would miss.</div>
+
+    <div class="hats-grid">
+      <div class="hat-card" style="--hat-color:var(--hat-white)">
+        <div class="hat-head"><div class="hat-disc"></div><div><div class="hat-name">White Hat</div><div class="hat-sub">Facts &amp; information</div></div></div>
+        <ul class="plain">
+          <li>Market knowledge is still surface-level — real market research is needed</li>
+          <li>Tech direction set: AWS hosting, Swift (iOS) + Kotlin (Android), TypeScript backend, Python for AI, Angular website</li>
+          <li>Biggest unknown: how the photo/video AI analysis will actually work — must be resolved with a spike before anything else is built</li>
+        </ul>
+      </div>
+
+      <div class="hat-card" style="--hat-color:var(--hat-red)">
+        <div class="hat-head"><div class="hat-disc"></div><div><div class="hat-name">Red Hat</div><div class="hat-sub">Feelings &amp; intuition</div></div></div>
+        <ul class="plain">
+          <li>Excitement: no one else combines AI photo/video analysis with a seamless, modern contractor-customer match</li>
+          <li>Excitement: relieving customer stress around expensive, high-stakes home repairs</li>
+          <li>Excitement: letting small/solo contractors scale without hiring dedicated admin staff</li>
+          <li>Unease: the product ships glitchy, or the core AI doesn't hold up reliably at production scale</li>
+        </ul>
+      </div>
+
+      <div class="hat-card" style="--hat-color:var(--hat-yellow)">
+        <div class="hat-head"><div class="hat-disc"></div><div><div class="hat-name">Yellow Hat</div><div class="hat-sub">Benefits &amp; best case</div></div></div>
+        <ul class="plain">
+          <li>Best-case 2yr: dominant and profitable in a region — the default first-thought platform for home service needs</li>
+          <li>Repeat usage, not one-time — customers return for future service needs</li>
+          <li>Demonstrably scales small contractor businesses, giving them more visibility</li>
+          <li>Fills a genuine market void — proves LLM-driven analysis can meaningfully improve people's lives</li>
+        </ul>
+      </div>
+
+      <div class="hat-card" style="--hat-color:var(--hat-black)">
+        <div class="hat-head"><div class="hat-disc"></div><div><div class="hat-name">Black Hat</div><div class="hat-sub">Caution &amp; risk</div></div></div>
+        <ul class="plain">
+          <li>A competitor copies the concept once proven, eroding first-mover advantage</li>
+          <li>Users abandon the full intake flow and just grab a contractor's contact info directly, bypassing the platform</li>
+          <li>Contractors game the system — fake reviews, self-referrals, manipulated data — a legitimacy/verification system is needed</li>
+        </ul>
+      </div>
+
+      <div class="hat-card" style="--hat-color:var(--hat-green)">
+        <div class="hat-head"><div class="hat-disc"></div><div><div class="hat-name">Green Hat</div><div class="hat-sub">New ideas</div></div></div>
+        <ul class="plain">
+          <li>Counter copycats through brand and marketing moat, not tech alone — creative, distinctive positioning</li>
+          <li>Log "reveal contact info" as a tracked event on the lead — even a direct call stays visible to the contractor, and the job can still be managed end-to-end through the platform</li>
+        </ul>
+      </div>
+
+      <div class="hat-card" style="--hat-color:var(--hat-blue)">
+        <div class="hat-head"><div class="hat-disc"></div><div><div class="hat-name">Blue Hat</div><div class="hat-sub">Process control</div></div></div>
+        <ul class="plain">
+          <li>Decision: the very next step after this session is to nail down system architecture and define the MVP feature set</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. JOB TO BE DONE -->
+  <section class="sheet reveal" data-num="03" data-code="JOB TO BE DONE">
+    <span class="corner-tick">CORE DRILL — WHY, NOT WHAT</span>
+    <div class="kicker">Technique 03</div>
+    <div class="sheet-title">Drilling to the real job</div>
+    <div class="sheet-sub">Past the feature list, what is each side actually "hiring" this platform to do for them? Business model note: homeowners use it free — the platform monetizes through contractors.</div>
+
+    <div class="jtbd-grid">
+      <div class="gauge">
+        <div class="gauge-title">Homeowner</div>
+        <div class="gauge-sub">Depth of the job</div>
+        <div class="layer l1">
+          <div class="depth-label">Surface job</div>
+          <p>"Get a quote for my repair."</p>
+        </div>
+        <div class="layer l2">
+          <div class="depth-label">Real job</div>
+          <p>Relieve the anxiety of not knowing what they're looking at or who to trust — give me the confidence and insight to book with certainty.</p>
+        </div>
+      </div>
+
+      <div class="gauge">
+        <div class="gauge-title">Contractor</div>
+        <div class="gauge-sub">Depth of the job</div>
+        <div class="layer l1">
+          <div class="depth-label">Surface job</div>
+          <p>"Handle my intake and admin work."</p>
+        </div>
+        <div class="layer l2">
+          <div class="depth-label">Deeper job</div>
+          <p>Replace the cost of hiring dedicated intake/admin staff, at a fraction of the price — scale the business without scaling headcount.</p>
+        </div>
+        <div class="layer l3">
+          <div class="depth-label">Deepest job</div>
+          <p>Alleviate the overwhelm of running a business — AI insight should actively help drive revenue, not just cut admin cost.</p>
+        </div>
+      </div>
+    </div>
+    <div class="note-tab">Direction confirmed here: homeowners are free users. Contractors are the paying side of the marketplace.</div>
+  </section>
+
+  <!-- 4. WHAT IF -->
+  <section class="sheet reveal" data-num="04" data-code="WHAT IF SCENARIOS">
+    <span class="corner-tick">DETONATE THE ASSUMPTIONS</span>
+    <div class="kicker">Technique 04</div>
+    <div class="sheet-title">Three premises, set off deliberately</div>
+    <div class="sheet-sub">Each scenario blows up a constraint on purpose — unlimited resources, an inverted assumption, a solved problem — to see what idea falls out.</div>
+
+    <div class="blast-grid">
+      <div class="blast-card">
+        <div class="spark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/><circle cx="12" cy="12" r="3" fill="var(--accent-2)" stroke="none"/></svg>
+        </div>
+        <div class="blast-what-if">What if — unlimited budget</div>
+        <div class="blast-title">A pricing engine that teaches itself</div>
+        <p>The system learns from historical job costs and materials used to auto-generate ever more accurate estimates — a self-improving pricing engine fed by each contractor's own job history.</p>
+      </div>
+
+      <div class="blast-card">
+        <div class="spark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/><circle cx="12" cy="12" r="3" fill="var(--accent-2)" stroke="none"/></svg>
+        </div>
+        <div class="blast-what-if">What if — the opposite is true</div>
+        <div class="blast-title">Let the confident skip the diagnosis</div>
+        <p>A hybrid intake flow: a "skip the AI diagnosis" path for returning or knowledgeable users who already know what they need, alongside the full guided AI-assessment flow for new or unsure users.</p>
+      </div>
+
+      <div class="blast-card">
+        <div class="spark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/><circle cx="12" cy="12" r="3" fill="var(--accent-2)" stroke="none"/></svg>
+        </div>
+        <div class="blast-what-if">What if — the trust gap vanished</div>
+        <div class="blast-title">The AI stops asking permission</div>
+        <p>If AI accuracy and trust were no longer in question, full smart automation unlocks — the AI could auto-select which jobs a contractor should take and auto-assign/schedule them, not just surface leads for manual review.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. TIME HORIZON LADDER -->
+  <section class="sheet reveal" data-num="05" data-code="TIME HORIZON LADDER">
+    <span class="corner-tick">ELEVATION VIEW</span>
+    <div class="kicker">Technique 05</div>
+    <div class="sheet-title">Climbing from MVP to speculation</div>
+    <div class="sheet-sub">Same idea, four altitudes — from a committed six-month deadline up to a claim so large it questions the platform's own premise.</div>
+
+    <div class="ladder-wrap">
+      <div class="ladder">
+        <div class="rail"></div>
+
+        <div class="rung mvp">
+          <div class="rung-card left">
+            <div class="rung-label">Commitment</div>
+            <div class="rung-title">MVP — 6 months</div>
+            <p>Timeline goal locked in: the MVP must be live within six months.</p>
+          </div>
+          <div class="rung-step">NOW</div>
+          <div class="rung-card empty"></div>
+        </div>
+
+        <div class="rung y1">
+          <div class="rung-card empty"></div>
+          <div class="rung-step">1Y</div>
+          <div class="rung-card">
+            <div class="rung-label">1-year vision</div>
+            <div class="rung-title">Live, paid, measured</div>
+            <p>Real paying contractor customers, with concrete financial and technical KPIs — user count and daily engagement targets in place.</p>
+          </div>
+        </div>
+
+        <div class="rung y10">
+          <div class="rung-card left">
+            <div class="rung-label">10-year vision</div>
+            <div class="rung-title">Beyond contractors</div>
+            <p>Expands into a general local-services discovery platform — barbers, stylists, mechanics — all powered by a matured, fortified AI analysis layer.</p>
+          </div>
+          <div class="rung-step">10Y</div>
+          <div class="rung-card empty"></div>
+        </div>
+
+        <div class="rung y100">
+          <div class="rung-card empty"></div>
+          <div class="rung-step">100Y</div>
+          <div class="rung-card">
+            <div class="rung-label">100-year speculation</div>
+            <div class="rung-title">AI fulfills the need directly</div>
+            <p>AI becomes advanced enough to autonomously fulfill the underlying need itself — potentially collapsing the "match human to human via AI" model entirely.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. CONVERGENCE -->
+  <section class="sheet reveal" data-num="06" data-code="CONVERGENCE">
+    <span class="corner-tick">SORT SHEET — MoSCoW</span>
+    <div class="kicker">Technique 06</div>
+    <div class="sheet-title">From idea pile to MVP scope</div>
+    <div class="sheet-sub">Every idea above was clustered into six affinity groups, then sorted against the MVP using MoSCoW — Must, Should, Could, Won't-this-time.</div>
+
+    <div class="moscow-legend">
+      <span><i class="sw" style="background:var(--must)"></i>Must</span>
+      <span><i class="sw" style="background:var(--should)"></i>Should</span>
+      <span><i class="sw" style="background:var(--could)"></i>Could</span>
+      <span><i class="sw" style="background:var(--wont)"></i>Won't — this time</span>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><span><span class="idx">01</span>Trust &amp; Pricing Transparency</span></div>
+      <div class="moscow-rows">
+        <div class="row-must">Must</div>
+        <div class="row-must"><div class="tag-list"><span class="tag">AI misdiagnosis disclaimer to homeowner</span><span class="tag">Hybrid skip-AI-diagnosis path</span></div></div>
+        <div class="row-should">Should</div>
+        <div class="row-should"><div class="tag-list"><span class="tag">Self-improving historical-cost pricing engine</span></div></div>
+      </div>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><span><span class="idx">02</span>Lead Quality &amp; Contractor Trust</span></div>
+      <div class="moscow-rows">
+        <div class="row-must">Must</div>
+        <div class="row-must"><div class="tag-list"><span class="tag">Detail / budget-realism lead signals</span><span class="tag">Cold-lead filtering</span><span class="tag">Contractor legitimacy verification</span></div></div>
+      </div>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><span><span class="idx">03</span>Admin Dashboard &amp; Business Ops</span></div>
+      <div class="moscow-rows">
+        <div class="row-must">Must</div>
+        <div class="row-must"><div class="tag-list"><span class="tag">Card-based job queue with expand-detail</span><span class="tag">Low-click acceptance flow</span></div></div>
+        <div class="row-should">Should</div>
+        <div class="row-should"><div class="tag-list"><span class="tag">Tiered pricing (self-serve vs. dedicated admin)</span><span class="tag">Revenue-driving analytics insights</span></div></div>
+      </div>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><span><span class="idx">04</span>Tech Foundation &amp; AI Spike</span></div>
+      <div class="moscow-rows">
+        <div class="row-must">Must</div>
+        <div class="row-must"><div class="tag-list"><span class="tag">Tech stack decisions (AWS · Swift/Kotlin · TypeScript · Python · Angular)</span><span class="tag">AI vision-analysis research spike</span></div></div>
+      </div>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><span><span class="idx">05</span>Growth, Retention &amp; Moat</span></div>
+      <div class="moscow-rows">
+        <div class="row-should">Should</div>
+        <div class="row-should"><div class="tag-list"><span class="tag">Contact-reveal event tracking</span></div></div>
+        <div class="row-could">Could</div>
+        <div class="row-could"><div class="tag-list"><span class="tag">Brand / marketing moat strategy</span></div></div>
+      </div>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><span><span class="idx">06</span>Vision &amp; Expansion</span></div>
+      <div class="moscow-rows">
+        <div class="row-wont">Won't — this time</div>
+        <div class="row-wont"><div class="tag-list"><span class="tag">Multi-trade expansion</span><span class="tag">10-year local-services vision</span><span class="tag">100-year full-automation speculation</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. FINAL SYNTHESIS -->
+  <section class="sheet reveal" data-num="07" data-code="SYNTHESIS" style="border-top:none;">
+    <div class="synthesis">
+      <div class="synth-kicker">Final Synthesis</div>
+      <div class="synth-title">Two threads, one feedback loop</div>
+
+      <div class="converge-diagram">
+        <div class="node">
+          <div class="tiny">Thread A — Trust Gap Tension</div>
+          <h4>Hybrid skip-AI-diagnosis flow</h4>
+          <p>Directly mitigates the trust-gap tension: it protects new, unsure users from a bad AI guess while letting knowledgeable users bypass it entirely.</p>
+        </div>
+        <div class="node">
+          <div class="tiny">Thread B — JTBD "Relieve Overwhelm"</div>
+          <h4>Card-queue, low-click dashboard</h4>
+          <p>Not just UX polish — it is the literal delivery mechanism for the contractor's deepest job: alleviating the overwhelm of running the business.</p>
+        </div>
+
+        <div class="converge-arrows">
+          <svg viewBox="0 0 200 60" fill="none" stroke="var(--accent)" stroke-width="2">
+            <path d="M20 4 L100 46 L180 4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="flywheel">
+          <div class="tiny">Where both threads converge</div>
+          <h3>The data flywheel — outcome logging</h3>
+          <p>Both threads land on the same single feedback loop: logging actual job outcomes tightens estimate accuracy <em>and</em> improves lead-quality filtering at once. That's the argument for wiring up outcome logging early — even while the full self-improving pricing engine stays a Should for later.</p>
+        </div>
+      </div>
+
+      <div class="core-tension">
+        <div class="tiny">The core tension this session kept circling back to</div>
+        <blockquote>Homeowners need certainty from an AI that can't yet be fully certain — and the fix isn't a better guess, it's giving people an honest choice about how much they lean on the guess at all.</blockquote>
+        <div class="approved-stamp">Carried into MVP scope</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  brainstorm-ai-lead-intake-platform-2026-07-09 · .memlog.md rendered as blueprint · session status: complete
+</footer>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(e){ e.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(function(e){ io.observe(e); });
+})();
+</script>
+
+</body>
+</html>

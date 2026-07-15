@@ -1,0 +1,28 @@
+# Reconciliation: Property_Trades_Taxonomy.md vs. prd.md / addendum.md
+
+Source input: `docs/Property_Trades_Taxonomy.md`
+Checked against: `prd.md`, `addendum.md` (2026-07-14 PRD)
+
+Excluded by instruction: "Phase 1 trade subset not yet chosen" — already tracked as PRD §8 Open Question 1. Not re-flagged below.
+
+## What IS accurately captured (no gap)
+
+- **Work Types enumeration** (Repair, Maintenance, Improvement/Renovation, Inspection, Emergency) — captured verbatim in PRD §3 Glossary, "Work Type" entry.
+- **Trade → Service → Work Type structure** — captured in Glossary "Trade" and "Service" entries, and in §4.2 (FR-3).
+- **Contractor↔Trade↔Service many-to-many cardinality** (a Contractor can belong to multiple Trades and offer multiple Services) — explicitly stated in Glossary "Contractor" entry ("Registered against one or more Trades and Services") and FR-4's consequence: "A Contractor can register for multiple Trades and multiple Services within each Trade, per the Taxonomy's Contractor↔Trade↔Service data model."
+- **Relational data model** (Trades, Services, Contractors, ContractorTrades, ContractorServices) — reproduced verbatim (including the `License` field) in addendum.md's "Property Services Taxonomy — Data Model" section, with an accurate one-line paraphrase of the model's purpose (maps issues → Services → qualified Contractors via `ContractorServices`).
+- **Trade Catalog breadth** — addendum.md's "~20 Trade categories from General Contracting to Pest Control" is a reasonable summary of the taxonomy's ~22 top-level categories.
+
+## Gaps found
+
+1. **"Emergency" Work Type has no corresponding handling anywhere in the PRD.** The taxonomy explicitly names Emergency as one of five Work Types (e.g., Biohazard cleanup, Storm damage restoration, Tree removal are tagged Emergency/Repair-Emergency). The PRD's only nod to urgency is FR-10's consequence, "Default card view shows lead-quality signal, trade, and **urgency** without requiring a tap" — but "urgency" is never defined in the Glossary, never tied to the taxonomy's Emergency Work Type, and has no FR describing how it's computed, whether Emergency-tagged Leads get expedited matching/notification/SLA, or how they interact with Lead-Quality Signal filtering (§4.3) or Matching Priority (§4.7). Given the Vision section's own leading example is a "leaking pipe" (an Emergency-adjacent scenario for Plumbing per the taxonomy), this looks load-bearing but is absent from Features (§4), Success Metrics (§7), and Open Questions (§8).
+
+2. **"Inspection" Work Type implies a materially different intake flow than Repair/Improvement, and this distinction is not addressed.** The PRD's Hybrid Intake Flow (§4.1) is built entirely around "problem diagnosis" — Homeowner submits photos of damage, AI produces a preliminary diagnosis, contractor fixes the diagnosed issue. For Inspection-type Services (e.g., Roof inspection, Mold inspection, or the taxonomy's entire separate "Inspection Services" Trade — Home/Commercial/Roof/Foundation/HVAC/Electrical/Plumbing/Energy/Insurance inspections), there is no "damage" for the AI to diagnose — the inspection itself is the requested deliverable, not a diagnostic precursor to a repair. Similarly, Improvement/Renovation Work Type (e.g., kitchen remodel, new construction) is a proactive want, not a "problem," which sits awkwardly against FR-1's photo-of-damage framing and the Vision's "leaking pipe / flickering breaker / broken unit" problem-framing. Neither the Glossary, §4.1/§4.2 FRs, nor §8 Open Questions acknowledge that different Work Types may need different intake shapes.
+
+3. **The taxonomy has a structural quirk the PRD/addendum silently inherits without flagging:** several taxonomy rows list multiple Work Types for one Service (e.g., "Gutters & downspouts | Repair, Maintenance, Improvement"; "Water heaters | Repair, Improvement" — used as the PRD's own UJ-1 example), but the suggested schema models `Services.WorkType` as a single scalar column, implying one Work Type per Service row. Addendum.md's data-model summary reproduces the schema verbatim without noting this tension. Not necessarily a defect in the PRD, but a modeling ambiguity from the source that goes unmentioned — worth a note for whoever designs the actual schema (would need either a join table or duplicate Service rows per Work Type).
+
+4. **"Inspection Services" as a Trade category vs. "Inspection" as a Work Type is a naming collision not surfaced.** The taxonomy has both a Work Type called "Inspection" (assessment/diagnostics/compliance, applied across many Trades) and a standalone Trade called "Inspection Services" (a dedicated trade category for inspection-only contractors). The PRD's Glossary only defines "Work Type" and doesn't note this dual usage exists in the source taxonomy. Minor, but could cause ambiguity in FR-3's Issue-to-Service mapping design (e.g., does a "roof inspection" request map to the Roofing Trade's Inspection-Work-Type service, or to the Inspection Services Trade's "Roof" inspection service — both exist in the taxonomy).
+
+## Summary
+
+The PRD's Glossary and Issue-to-Service Matching feature (§4.2, FR-3/FR-4) correctly and explicitly capture the taxonomy's core structure and cardinality claim (Contractor ↔ multiple Trades ↔ multiple Services). The data model is accurately reproduced in addendum.md. The gaps are not about missing enumeration of trades/services (appropriately deferred per Open Question 1) but about two Work-Type-driven requirement implications the taxonomy raises that the PRD never addresses: Emergency-driven urgency/SLA handling, and Inspection/Improvement Work Types needing an intake flow distinct from the damage-diagnosis-centric Guided Assessment Flow.

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Key Screen — AI Diagnosis Result (Homeowner)</title>
+<style>
+/*
+  Governs: EXPERIENCE.md § Information Architecture (AI Diagnosis Result),
+  § Component Patterns (AI Diagnosis Card), § Key Flows (UJ-1, steps 3-4),
+  § Voice and Tone. DESIGN.md § Colors, Typography, Shapes, Elevation & Depth,
+  Components (AI Diagnosis Card, Disclaimer Banner, Button primary).
+  Canonical state shown; low-confidence re-prompt is a State Patterns row,
+  not rendered here (text-only change, no new layout).
+*/
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #E9E4D8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px;
+}
+.phone {
+  width: 390px;
+  height: 780px;
+  background: #FFF9F2; /* surface-base */
+  border-radius: 44px;
+  border: 10px solid #23252B;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.25);
+}
+.notch {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 24px; background: #23252B; border-radius: 12px; z-index: 5;
+}
+.screen { padding: 56px 20px 24px; height: 100%; display: flex; flex-direction: column; }
+.eyebrow {
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-size: 13px; font-weight: 600; color: #6B6558; /* ink-secondary */
+  text-transform: none; margin-bottom: 8px;
+}
+.headline {
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-size: 28px; font-weight: 700; line-height: 1.2;
+  color: #23252B; /* ink-primary */
+  margin-bottom: 20px;
+}
+.card {
+  background: #FFFFFF; /* surface-raised */
+  border-radius: 20px; /* rounded.lg */
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(35,37,43,0.08); /* default shadow, per Elevation & Depth fix */
+  margin-bottom: 16px;
+}
+.confidence-row {
+  display: flex; align-items: center; gap: 8px;
+  font-family: Inter, -apple-system, sans-serif;
+  font-size: 13px; font-weight: 500; color: #0B7A70; /* trust, ~5.2:1 on white */
+  margin-bottom: 12px;
+}
+.confidence-dot { width: 8px; height: 8px; border-radius: 50%; background: #0B7A70; }
+.diagnosis-text {
+  font-family: Inter, -apple-system, sans-serif;
+  font-size: 16px; line-height: 1.5; color: #23252B;
+  margin-bottom: 4px;
+}
+.service-tag {
+  display: inline-block; margin-top: 12px;
+  font-family: Inter, -apple-system, sans-serif;
+  font-size: 13px; font-weight: 500; color: #6B6558;
+  background: #F5EFE3; /* surface-sunken */
+  border-radius: 9999px; /* rounded.full */
+  padding: 4px 12px;
+}
+.disclaimer {
+  background: #F5EFE3; /* surface-sunken */
+  border-radius: 14px; /* rounded.md */
+  padding: 14px 16px;
+  font-family: Inter, -apple-system, sans-serif;
+  font-size: 13px; line-height: 1.5; color: #6B6558; /* ~5.05:1 on sunken */
+  margin-bottom: 24px;
+}
+.spacer { flex: 1; }
+.btn-primary {
+  background: #C2410C; /* primary, ~5.18:1 with white text */
+  color: #FFFFFF;
+  font-family: Inter, -apple-system, sans-serif;
+  font-size: 16px; font-weight: 600;
+  border: none;
+  border-radius: 9999px; /* rounded.full */
+  padding: 16px;
+  text-align: center;
+  outline: 3px solid transparent;
+}
+.btn-primary:focus-visible { outline-color: #0B7A70; outline-offset: 2px; } /* focus-ring */
+.media-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.media-thumb {
+  width: 64px; height: 64px; border-radius: 8px; /* rounded.sm */
+  background: linear-gradient(135deg, #D8D0C0, #C7BEA9);
+  border: 1px solid #ECE6DA;
+}
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="eyebrow">Your diagnosis</div>
+      <div class="headline">Here's what we think is going on.</div>
+
+      <div class="media-row">
+        <div class="media-thumb"></div>
+        <div class="media-thumb"></div>
+        <div class="media-thumb"></div>
+      </div>
+
+      <div class="card">
+        <div class="confidence-row"><span class="confidence-dot"></span>High confidence</div>
+        <div class="diagnosis-text">Likely a failed pressure relief valve or tank corrosion.</div>
+        <span class="service-tag">Plumbing · Water heaters</span>
+      </div>
+
+      <div class="disclaimer">
+        This is our best guess — your contractor will confirm on-site.
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn-primary">Continue to your match</button>
+    </div>
+  </div>
+</body>
+</html>
