@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Toast-Style Intake Widget — Phase 1 Scope | Brainstorm Keepsake</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff5a1f'/%3E%3Cpath d='M14 40 Q14 20 32 20 Q50 20 50 40 L50 46 Q50 50 46 50 L38 50 L32 58 L26 50 L18 50 Q14 50 14 46 Z' fill='%23fff'/%3E%3Ccircle cx='24' cy='36' r='2.4' fill='%23ff5a1f'/%3E%3Ccircle cx='32' cy='36' r='2.4' fill='%23ff5a1f'/%3E%3Ccircle cx='40' cy='36' r='2.4' fill='%23ff5a1f'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg: #f6f3ec;
+    --bg-alt: #efe9dc;
+    --surface: #ffffff;
+    --surface-2: #fbf8f2;
+    --text: #1e1a14;
+    --muted: #6c6355;
+    --line: #e2dbc9;
+    --line-strong: #cfc4aa;
+    --toast: #ff5a1f;
+    --toast-dark: #c93f0f;
+    --toast-tint: #fff1e8;
+    --er: #d81e3a;
+    --er-dark: #8f1526;
+    --er-tint: #fdeaec;
+    --casino: #0b6b4f;
+    --casino-dark: #063f2f;
+    --gold: #b5892a;
+    --gold-bright: #d9a83b;
+    --casino-tint: #eaf4ef;
+    --shadow: 0 12px 30px -14px rgba(30,20,10,0.28);
+    --shadow-soft: 0 4px 14px -8px rgba(30,20,10,0.2);
+    --radius: 16px;
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: #15120d;
+      --bg-alt: #1b1712;
+      --surface: #201b14;
+      --surface-2: #241f17;
+      --text: #f2ead9;
+      --muted: #b3a68e;
+      --line: #362f24;
+      --line-strong: #46402f;
+      --toast: #ff7440;
+      --toast-dark: #ff8f5c;
+      --toast-tint: #2b1a10;
+      --er: #ff5a72;
+      --er-dark: #ff8a9a;
+      --er-tint: #2c1418;
+      --casino: #2fbf8d;
+      --casino-dark: #6fe0b6;
+      --gold: #e0b752;
+      --gold-bright: #f0cc6f;
+      --casino-tint: #0f2019;
+      --shadow: 0 16px 34px -12px rgba(0,0,0,0.55);
+      --shadow-soft: 0 6px 18px -10px rgba(0,0,0,0.5);
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, var(--toast-tint), transparent 60%),
+      radial-gradient(1000px 500px at 110% 10%, var(--casino-tint), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{max-width:100%;display:block;}
+  .page{max-width:920px;margin:0 auto;padding:0 20px 100px;}
+  h1,h2,h3,h4{font-family:var(--serif); font-weight:700; margin:0;}
+  a{color:inherit;}
+  .eyebrow{
+    font-family:var(--mono);
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    font-size:.72rem;
+    color:var(--muted);
+  }
+
+  /* ============ HERO ============ */
+  .hero{padding:64px 0 40px; text-align:center;}
+  .hero .eyebrow{margin-bottom:18px;}
+  .hero h1{
+    font-size:clamp(2rem, 5vw, 3.1rem);
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  .hero h1 .accent{color:var(--toast);}
+  .hero .sub{
+    max-width:620px; margin:18px auto 0;
+    color:var(--muted); font-size:1.05rem;
+  }
+  .meta-row{
+    display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+    margin-top:26px;
+  }
+  .meta-pill{
+    font-family:var(--mono); font-size:.72rem; letter-spacing:.03em;
+    padding:6px 12px; border-radius:999px;
+    border:1px solid var(--line-strong); color:var(--muted);
+    background:var(--surface-2);
+  }
+  .meta-pill b{color:var(--text); font-weight:600;}
+
+  /* Browser mock: contractor's own site with embedded CTA button (entry point motif) */
+  .mock-browser{
+    max-width:520px; margin:40px auto 8px;
+    border-radius:14px; overflow:hidden;
+    border:1px solid var(--line-strong);
+    box-shadow:var(--shadow);
+    background:var(--surface);
+    text-align:left;
+  }
+  .mock-bar{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 14px; background:var(--surface-2);
+    border-bottom:1px solid var(--line);
+  }
+  .mock-dot{width:9px; height:9px; border-radius:50%; background:var(--line-strong);}
+  .mock-url{
+    margin-left:10px; font-family:var(--mono); font-size:.72rem; color:var(--muted);
+    background:var(--bg); border:1px solid var(--line); border-radius:6px;
+    padding:3px 10px; flex:1;
+  }
+  .mock-body{
+    padding:34px 22px 30px;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    background:
+      repeating-linear-gradient(135deg, transparent 0 22px, rgba(120,110,90,0.04) 22px 23px);
+  }
+  .mock-body .mock-headline{font-family:var(--serif); font-size:1rem; color:var(--muted); font-style:italic;}
+  .cta-btn{
+    position:relative;
+    font-family:var(--sans); font-weight:600; font-size:.95rem;
+    color:#fff; background:linear-gradient(180deg, var(--toast), var(--toast-dark));
+    padding:12px 26px; border-radius:10px;
+    box-shadow:0 8px 18px -8px rgba(255,90,31,0.55);
+  }
+  .cta-ring{
+    position:absolute; inset:0; border-radius:10px;
+    border:2px solid var(--toast);
+    animation:ping 2.4s cubic-bezier(.4,0,.3,1) infinite;
+  }
+  @keyframes ping{
+    0%{opacity:.7; transform:scale(1);}
+    80%{opacity:0; transform:scale(1.35);}
+    100%{opacity:0; transform:scale(1.4);}
+  }
+  .mock-caption{
+    text-align:center; font-size:.78rem; color:var(--muted);
+    margin-top:10px; font-family:var(--mono);
+  }
+
+  /* ============ CONTEXT NOTE ============ */
+  .context-note{
+    max-width:680px; margin:36px auto 10px;
+    padding:18px 22px; border-radius:12px;
+    background:var(--surface-2); border:1px dashed var(--line-strong);
+    font-size:.92rem; color:var(--muted);
+  }
+  .context-note b{color:var(--text);}
+  .direction-line{
+    max-width:680px; margin:16px auto 0;
+    text-align:center; font-size:.86rem; color:var(--muted);
+  }
+  .tech-badges{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px;
+  }
+  .tech-badge{
+    font-family:var(--mono); font-size:.7rem;
+    padding:5px 11px; border-radius:7px;
+    background:var(--toast-tint); color:var(--toast-dark);
+    border:1px solid color-mix(in srgb, var(--toast) 35%, transparent);
+  }
+
+  /* ============ SECTION SCAFFOLDING ============ */
+  section.block{margin-top:88px;}
+  .block-head{margin-bottom:30px;}
+  .block-num{
+    font-family:var(--mono); font-size:.78rem; color:var(--toast); letter-spacing:.08em;
+  }
+  .block-head h2{font-size:1.7rem; margin-top:6px;}
+  .block-tag{
+    display:inline-block; margin-left:10px; vertical-align:middle;
+    font-family:var(--mono); font-size:.66rem; letter-spacing:.06em;
+    padding:3px 9px; border-radius:999px; background:var(--surface-2);
+    border:1px solid var(--line-strong); color:var(--muted); text-transform:uppercase;
+  }
+  .block-intro{color:var(--muted); max-width:640px; margin-top:10px; font-size:.97rem;}
+
+  /* ============ 1. MORPHOLOGICAL GRID ============ */
+  .param-grid{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; margin-top:10px;
+  }
+  @media (max-width:640px){ .param-grid{grid-template-columns:1fr;} }
+  .param-card{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:20px 20px 18px;
+    box-shadow:var(--shadow-soft);
+    position:relative;
+  }
+  .param-idx{
+    position:absolute; top:16px; right:18px;
+    font-family:var(--mono); font-size:.68rem; color:var(--line-strong);
+  }
+  .param-card h4{
+    font-family:var(--sans); font-size:.92rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.04em; color:var(--toast-dark);
+    margin-bottom:10px; padding-right:30px;
+  }
+  .param-card p{margin:0 0 8px; font-size:.93rem;}
+  .param-card ul{margin:8px 0 0; padding-left:18px; font-size:.88rem; color:var(--muted);}
+  .param-card li{margin-bottom:6px;}
+  .param-card .alt-value{
+    margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);
+    font-size:.85rem; color:var(--muted);
+  }
+  .param-card .alt-value b{color:var(--text); font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.04em; display:block; margin-bottom:4px;}
+
+  .decisions{margin-top:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:640px){ .decisions{grid-template-columns:1fr;} }
+  .decision-card{
+    background:var(--toast-tint); border:1px solid color-mix(in srgb, var(--toast) 30%, transparent);
+    border-radius:12px; padding:16px 18px;
+  }
+  .decision-card .label{
+    font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--toast-dark); margin-bottom:6px; display:flex; align-items:center; gap:6px;
+  }
+  .decision-card .label:before{content:"✓"; font-family:var(--sans);}
+  .decision-card p{margin:0; font-size:.88rem;}
+
+  /* ============ 2. JTBD ============ */
+  .jtbd-cards{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:10px;}
+  @media (max-width:640px){ .jtbd-cards{grid-template-columns:1fr;} }
+  .persona-card{
+    border-radius:var(--radius); overflow:hidden; border:1px solid var(--line);
+    box-shadow:var(--shadow-soft); background:var(--surface);
+  }
+  .persona-head{
+    padding:16px 20px; font-family:var(--serif); font-size:1.15rem; font-weight:700;
+    color:#fff;
+  }
+  .persona-card.contractor .persona-head{background:linear-gradient(120deg, var(--toast-dark), var(--toast));}
+  .persona-card.homeowner .persona-head{background:linear-gradient(120deg, var(--casino-dark), var(--casino));}
+  .persona-head span{display:block; font-family:var(--mono); font-size:.68rem; font-weight:400; opacity:.85; margin-top:2px; text-transform:uppercase; letter-spacing:.05em;}
+  .job-row{padding:16px 20px; border-top:1px solid var(--line);}
+  .job-row:first-of-type{border-top:none;}
+  .job-label{
+    font-family:var(--mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--muted); margin-bottom:6px;
+  }
+  .job-row.functional .job-label:before{content:"⚙ "; }
+  .job-row.emotional .job-label:before{content:"♥ "; }
+  .job-row p{margin:0; font-size:.92rem;}
+
+  .fear-callout{
+    margin-top:24px; text-align:center; max-width:600px; margin-left:auto; margin-right:auto;
+    padding:20px 26px; border-radius:14px;
+    background:var(--surface-2); border:1px solid var(--line-strong);
+  }
+  .fear-callout .label{
+    font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--er); margin-bottom:8px;
+  }
+  .fear-callout p{margin:0; font-family:var(--serif); font-size:1.05rem; font-style:italic;}
+
+  /* ============ 3. BUILD ON WHAT WORKS — staircase amplifier ============ */
+  .staircase{margin-top:16px; display:flex; flex-direction:column; gap:14px;}
+  .stair-step{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:12px; padding:16px 20px;
+    box-shadow:var(--shadow-soft);
+    display:flex; gap:16px; align-items:flex-start;
+    position:relative;
+  }
+  .stair-step:nth-child(1){margin-right:24%;}
+  .stair-step:nth-child(2){margin-right:16%;}
+  .stair-step:nth-child(3){margin-right:8%;}
+  .stair-step:nth-child(4){margin-right:0;}
+  @media (max-width:640px){ .stair-step{margin-right:0 !important;} }
+  .stair-step .vol{
+    flex:none; width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:.75rem; font-weight:700; color:#fff;
+    background:var(--toast);
+  }
+  .stair-step:nth-child(1) .vol{background:#d8cdb4; color:var(--text);}
+  .stair-step:nth-child(2) .vol{background:#c9a876; }
+  .stair-step:nth-child(3) .vol{background:var(--toast-dark);}
+  .stair-step:nth-child(4) .vol{background:var(--toast); box-shadow:0 0 0 4px color-mix(in srgb, var(--toast) 25%, transparent);}
+  .stair-step .label{
+    font-family:var(--mono); font-size:.68rem; text-transform:uppercase; color:var(--muted); letter-spacing:.05em; margin-bottom:4px;
+  }
+  .stair-step p{margin:0; font-size:.92rem;}
+
+  /* ============ 4. CROSS-POLLINATION split panel ============ */
+  .split-panel{
+    display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:12px;
+  }
+  @media (max-width:680px){ .split-panel{grid-template-columns:1fr;} }
+
+  .er-panel{
+    border-radius:var(--radius); padding:22px 22px 20px;
+    background:var(--surface); border:1px solid var(--er);
+    box-shadow:0 0 0 1px color-mix(in srgb, var(--er) 12%, transparent), var(--shadow-soft);
+  }
+  .panel-title{
+    display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .panel-title h3{font-size:1.1rem;}
+  .er-panel .panel-title{color:var(--er-dark);}
+  .er-icon{
+    width:28px; height:28px; flex:none; position:relative;
+  }
+  .er-icon:before, .er-icon:after{
+    content:""; position:absolute; background:var(--er); border-radius:2px;
+  }
+  .er-icon:before{ left:11px; top:2px; width:6px; height:24px; }
+  .er-icon:after{ left:2px; top:11px; width:24px; height:6px; }
+
+  .triage-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .triage-list li{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:10px 12px; border-radius:8px; background:var(--er-tint);
+    font-size:.88rem;
+  }
+  .triage-tag{
+    flex:none; font-family:var(--mono); font-size:.62rem; font-weight:700;
+    padding:3px 8px; border-radius:5px; color:#fff; letter-spacing:.03em;
+    margin-top:1px;
+  }
+  .triage-tag.t1{background:#e0293f;}
+  .triage-tag.t2{background:#e0293f; animation:pulseTag 1.8s ease-in-out infinite;}
+  .triage-tag.t3{background:#e0293f;}
+  @keyframes pulseTag{
+    0%,100%{box-shadow:0 0 0 0 rgba(224,41,63,.5);}
+    50%{box-shadow:0 0 0 5px rgba(224,41,63,0);}
+  }
+
+  .casino-panel{
+    border-radius:var(--radius); padding:22px 22px 20px;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(212,175,55,0.08), transparent 45%),
+      var(--surface);
+    border:1px solid var(--gold);
+    box-shadow:0 0 0 1px color-mix(in srgb, var(--gold) 15%, transparent), var(--shadow-soft);
+  }
+  .casino-panel .panel-title{color:var(--casino-dark);}
+  .chip-icon{
+    width:28px; height:28px; border-radius:50%; flex:none;
+    background:
+      repeating-conic-gradient(var(--casino) 0deg 20deg, var(--gold) 20deg 40deg);
+    border:2px solid var(--surface);
+    box-shadow:0 0 0 1.5px var(--gold);
+  }
+  .glow-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .glow-list li{
+    padding:12px 14px; border-radius:8px;
+    background:var(--casino-tint);
+    border:1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+    font-size:.88rem;
+    position:relative;
+  }
+  .glow-list li:before{
+    content:"◆"; color:var(--gold); font-size:.65rem; margin-right:8px;
+  }
+
+  /* ============ SYNTHESIS CLIMAX ============ */
+  .climax{
+    margin-top:110px; padding:56px 30px 60px; border-radius:24px;
+    background:
+      radial-gradient(900px 420px at 50% -20%, color-mix(in srgb, var(--toast) 16%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--surface-2), var(--bg-alt));
+    border:1px solid var(--line-strong);
+    box-shadow:var(--shadow);
+    text-align:center;
+  }
+  .climax .eyebrow{color:var(--toast-dark);}
+  .climax h2{
+    font-size:clamp(1.7rem, 4vw, 2.3rem); margin-top:10px;
+  }
+  .climax .lede{
+    max-width:560px; margin:14px auto 0; color:var(--muted); font-size:.98rem;
+  }
+
+  /* hub diagram */
+  .hub-wrap{margin:44px auto 10px; max-width:640px;}
+  .hub-diagram{width:100%; height:auto;}
+  .hub-diagram text{font-family:var(--sans); fill:var(--text);}
+  .hub-diagram .hub-label{font-size:12.5px; font-weight:700; letter-spacing:.02em;}
+  .hub-diagram .spoke-label{font-size:10.5px; fill:var(--muted);}
+  .hub-diagram .hub-core{fill:var(--surface);}
+  .hub-diagram line{stroke:var(--line-strong); stroke-width:1.4;}
+
+  .insight-stack{
+    margin-top:50px; display:flex; flex-direction:column; gap:16px; text-align:left;
+  }
+  .insight-card{
+    background:var(--surface); border:1px solid var(--line-strong);
+    border-radius:14px; padding:20px 24px;
+    box-shadow:var(--shadow-soft);
+    display:flex; gap:16px; align-items:flex-start;
+  }
+  .insight-card .mark{
+    flex:none; width:36px; height:36px; border-radius:50%;
+    background:linear-gradient(160deg, var(--toast), var(--er));
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-family:var(--serif); font-weight:700; font-size:1.05rem;
+  }
+  .insight-card .body .kicker{
+    font-family:var(--mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--muted); margin-bottom:5px;
+  }
+  .insight-card .body p{margin:0; font-size:.95rem;}
+  .insight-card .body b{color:var(--toast-dark);}
+
+  /* ============ FOOTER ============ */
+  footer{
+    margin-top:70px; text-align:center; color:var(--muted); font-size:.8rem;
+    font-family:var(--mono); padding-top:24px; border-top:1px solid var(--line);
+  }
+  footer .meta-row{margin-top:14px;}
+
+  /* reveal-on-scroll */
+  .reveal{ opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="eyebrow">Brainstorming Session Keepsake · Facilitated · Complete</div>
+    <h1>The <span class="accent">Toast‑Style</span> Intake Widget<br>Phase 1 Scope</h1>
+    <p class="sub">Embedding AI‑guided intake — photo, video, description — directly on an individual contractor's own website. No cross‑contractor marketplace matching. One contractor's own service set. A deliberate first step on the road toward a fuller platform.</p>
+
+    <div class="mock-browser">
+      <div class="mock-bar">
+        <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+        <div class="mock-url">acme‑plumbing.com</div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-headline">"Something leaking? Something sparking?"</div>
+        <div class="cta-btn">Get Instant Diagnosis <span class="cta-ring"></span></div>
+      </div>
+    </div>
+    <div class="mock-caption">entry point → hosted platform, one click from the contractor's own site</div>
+
+    <div class="meta-row">
+      <span class="meta-pill">mode: <b>facilitator</b></span>
+      <span class="meta-pill">status: <b>complete</b></span>
+      <span class="meta-pill">updated: <b>2026‑08‑12 23:05</b></span>
+    </div>
+  </header>
+
+  <div class="context-note reveal">
+    <b>Context carried in:</b> addendum.md already documents this as the <em>"Superseded Framing: Single‑Sided Widget Model"</em> — an embeddable widget on an individual contractor's site, with no platform‑side matching, verification, or tiering — previously set aside in favor of a full marketplace model. This session revives it and locks down Phase 1 under that framing.
+  </div>
+
+  <div class="direction-line reveal">
+    User selected this technique batch to run the session:
+    <div class="tech-badges">
+      <span class="tech-badge">Morphological Analysis · Deep</span>
+      <span class="tech-badge">Job to Be Done · Structured</span>
+      <span class="tech-badge">Build on What Works · Deep</span>
+      <span class="tech-badge">Cross‑Pollination · Creative</span>
+    </div>
+  </div>
+
+  <!-- ============ 1. MORPHOLOGICAL ANALYSIS ============ -->
+  <section class="block reveal" id="morphological">
+    <div class="block-head">
+      <div class="block-num">01 / Technique</div>
+      <h2>Morphological Analysis <span class="block-tag">Deep</span></h2>
+      <p class="block-intro">Six independent parameters, each pulled apart into its own option values — a spec sheet for assembling the widget, piece by piece.</p>
+    </div>
+
+    <div class="param-grid">
+      <div class="param-card">
+        <span class="param-idx">01</span>
+        <h4>Entry Point</h4>
+        <p>A button on the contractor's own website that redirects the customer to our hosted platform to submit the request.</p>
+        <ul>
+          <li>Also a button/listing on Google — similar to how restaurants have order‑through buttons on their Google listing — funneling into the same platform.</li>
+        </ul>
+        <div class="alt-value">
+          <b>Alt value</b>
+          Customers can also discover and access a contractor's page directly through our own platform/app or via Google search — independent of the contractor's own website — the way Uber Eats/DoorDash/Toast let diners find a restaurant's ordering page directly, not only through the restaurant's own site.
+        </div>
+      </div>
+
+      <div class="param-card">
+        <span class="param-idx">02</span>
+        <h4>AI Response</h4>
+        <p>Homeowner should wait at most ~1 minute for a likely‑issue response — fast <em>and</em> accurate, treated as an independently controllable axis.</p>
+      </div>
+
+      <div class="param-card">
+        <span class="param-idx">03</span>
+        <h4>Post‑Submission</h4>
+        <p>Request routes to the contractor's own dashboard/intake, where the contractor can accept + schedule the maintenance, or communicate with the client to gather more info first — all actions happen through the contractor's dashboard.</p>
+      </div>
+
+      <div class="param-card">
+        <span class="param-idx">04</span>
+        <h4>Capture Depth</h4>
+        <p>Widget collects a detailed description, photos/videos, plus a dedicated checklist/to‑do‑list page to help diagnose the issue — then hands off to AI analysis.</p>
+      </div>
+
+      <div class="param-card">
+        <span class="param-idx">05</span>
+        <h4>Branding / Templating</h4>
+        <p>Platform offers templates where contractors add their logo/branding, list the services they offer and job details, can directly request/claim jobs, and can surface customer feedback/reviews from previous jobs.</p>
+      </div>
+
+      <div class="param-card">
+        <span class="param-idx">06</span>
+        <h4>Monetization / Onboarding</h4>
+        <p>Monthly subscription with multiple contractor tiers, plus a mix of self‑serve signup and sales‑assisted setup to familiarize contractors with the platform.</p>
+      </div>
+    </div>
+
+    <div class="decisions">
+      <div class="decision-card">
+        <div class="label">Decision — Discovery‑Tier Crossing</div>
+        <p>Platform‑side discovery would push higher‑tier contractors to the top, but tiering itself is <b>not needed for MVP</b> — it rolls out later alongside more features, after MVP release.</p>
+      </div>
+      <div class="decision-card">
+        <div class="label">Decision — Speed‑Window Scoping</div>
+        <p>The 60‑second target applies only to the AI analysis step itself, not the full intake — checklist/description/photo‑video capture happens first, untimed, before the AI clock starts.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. JOB TO BE DONE ============ -->
+  <section class="block reveal" id="jtbd">
+    <div class="block-head">
+      <div class="block-num">02 / Technique</div>
+      <h2>Job to Be Done <span class="block-tag">Structured</span></h2>
+      <p class="block-intro">Two personas, each hired for a functional job and an emotional one underneath it.</p>
+    </div>
+
+    <div class="jtbd-cards">
+      <div class="persona-card contractor">
+        <div class="persona-head">Contractor<span>hires the widget to…</span></div>
+        <div class="job-row functional">
+          <div class="job-label">Functional</div>
+          <p>Cut administrative cost — replaces a hired person for finding leads/work, makes all admin work more seamless.</p>
+        </div>
+        <div class="job-row emotional">
+          <div class="job-label">Emotional</div>
+          <p>Relief from the feeling that their time is being wasted on dead leads and customers who can't communicate the real scope/impact of the work needed.</p>
+        </div>
+      </div>
+
+      <div class="persona-card homeowner">
+        <div class="persona-head">Homeowner<span>hires the widget to…</span></div>
+        <div class="job-row functional">
+          <div class="job-label">Functional</div>
+          <p>Diagnose the issue and get a realistic sense of project cost before ever calling.</p>
+        </div>
+        <div class="job-row emotional">
+          <div class="job-label">Emotional</div>
+          <p>Lifts the overwhelm of calling a contractor without foundational knowledge of the problem.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="fear-callout">
+      <div class="label">Insight — Root Fear</div>
+      <p>The root homeowner fear behind the JTBD: being overcharged or taken advantage of because they lack the knowledge to know what's fair. The diagnosis‑plus‑cost‑estimate job is really in service of avoiding that feeling.</p>
+    </div>
+  </section>
+
+  <!-- ============ 3. BUILD ON WHAT WORKS ============ -->
+  <section class="block reveal" id="build-on">
+    <div class="block-head">
+      <div class="block-num">03 / Technique</div>
+      <h2>Build on What Works <span class="block-tag">Deep</span></h2>
+      <p class="block-intro">Four ideas, each turning the volume up on the one before it — starting from what already works, amplifying trust step by step.</p>
+    </div>
+
+    <div class="staircase">
+      <div class="stair-step">
+        <div class="vol">1</div>
+        <div>
+          <div class="label">What works</div>
+          <p>Seamless integration into a contractor's existing website, plus a platform‑level directory for discovering other providers — worth expanding on eventually (echoes the platform‑discovery entry point).</p>
+        </div>
+      </div>
+      <div class="stair-step">
+        <div class="vol">2</div>
+        <div>
+          <div class="label">What works</div>
+          <p>Platform familiarity itself builds trust and sets clear expectations for the customer — recognizing the flow because they've used it elsewhere (Toast/DoorDash‑style) lowers friction.</p>
+        </div>
+      </div>
+      <div class="stair-step">
+        <div class="vol">3</div>
+        <div>
+          <div class="label">Amplify — trust without borrowed brand recognition</div>
+          <p>Accuracy of the AI analysis is the huge seller/differentiator — make‑or‑break for the platform, since we don't have Toast/DoorDash‑level existing user familiarity yet.</p>
+        </div>
+      </div>
+      <div class="stair-step">
+        <div class="vol">4</div>
+        <div>
+          <div class="label">Amplify further</div>
+          <p>UI polish and the contractor's ability to "sell their business" (branding, service listings, reviews) enriches the platform and makes it more desirable to use.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. CROSS-POLLINATION ============ -->
+  <section class="block reveal" id="cross-pollination">
+    <div class="block-head">
+      <div class="block-num">04 / Technique</div>
+      <h2>Cross‑Pollination <span class="block-tag">Creative</span></h2>
+      <p class="block-intro">Two borrowed worlds, two different comforts: the ER's urgency discipline, and the casino floor's engineered comfort.</p>
+    </div>
+
+    <div class="split-panel">
+      <div class="er-panel">
+        <div class="panel-title">
+          <div class="er-icon"></div>
+          <h3>ER‑Inspired</h3>
+        </div>
+        <ul class="triage-list">
+          <li><span class="triage-tag t1">TRIAGE</span> Visible urgency tags on every job — like ER triage levels — shown to both contractor and homeowner.</li>
+          <li><span class="triage-tag t2">LIVE</span> An algorithm that dynamically readjusts the contractor's job queue ordering as urgent requests come in — not just a static emergency flag.</li>
+          <li><span class="triage-tag t3">AI</span> AI analysis itself determines the urgency level of a job, not just the diagnosis content.</li>
+        </ul>
+      </div>
+
+      <div class="casino-panel">
+        <div class="panel-title">
+          <div class="chip-icon"></div>
+          <h3>Casino‑Inspired</h3>
+        </div>
+        <ul class="glow-list">
+          <li>The overall app vibe/look/feel is itself a comfort‑and‑engagement lever for homeowners, independent of the analysis content.</li>
+          <li>After a homeowner receives their AI diagnosis naming the likely job, show examples of that same job type plus reviews from other customers (contractor‑permitting) right after the analysis — social proof before they even talk to the contractor.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SYNTHESIS / CLIMAX ============ -->
+  <section class="climax reveal" id="synthesis">
+    <div class="eyebrow">Closing Synthesis</div>
+    <h2>Where the session landed</h2>
+    <p class="lede">Four techniques, one center of gravity. The coach's closing reads, pulled together at the end of the session.</p>
+
+    <div class="hub-wrap">
+      <svg class="hub-diagram" viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- spokes -->
+        <line x1="230" y1="130" x2="60" y2="40"></line>
+        <line x1="230" y1="130" x2="60" y2="130"></line>
+        <line x1="230" y1="130" x2="60" y2="220"></line>
+        <line x1="410" y1="130" x2="580" y2="40"></line>
+        <line x1="410" y1="130" x2="580" y2="130"></line>
+        <line x1="410" y1="130" x2="580" y2="220"></line>
+        <line x1="230" y1="130" x2="410" y2="130" stroke-width="2"></line>
+
+        <!-- hangers left -->
+        <circle cx="60" cy="40" r="4" fill="var(--muted)"></circle>
+        <text x="72" y="44" class="spoke-label">Branding</text>
+        <circle cx="60" cy="130" r="4" fill="var(--muted)"></circle>
+        <text x="72" y="134" class="spoke-label">Tiering</text>
+        <circle cx="60" cy="220" r="4" fill="var(--muted)"></circle>
+        <text x="72" y="224" class="spoke-label">Dashboard</text>
+
+        <!-- hangers right -->
+        <circle cx="580" cy="40" r="4" fill="var(--muted)"></circle>
+        <text x="500" y="44" class="spoke-label" text-anchor="end">Reviews</text>
+        <circle cx="580" cy="130" r="4" fill="var(--muted)"></circle>
+        <text x="500" y="134" class="spoke-label" text-anchor="end">Urgency tags</text>
+        <circle cx="580" cy="220" r="4" fill="var(--muted)"></circle>
+        <text x="500" y="224" class="spoke-label" text-anchor="end">Templates</text>
+
+        <!-- hubs -->
+        <circle cx="230" cy="130" r="46" class="hub-core" stroke="var(--toast)" stroke-width="2.4"></circle>
+        <text x="230" y="126" text-anchor="middle" class="hub-label">Entry‑Point</text>
+        <text x="230" y="141" text-anchor="middle" class="hub-label">Model</text>
+
+        <circle cx="410" cy="130" r="46" class="hub-core" stroke="var(--er)" stroke-width="2.4"></circle>
+        <text x="410" y="126" text-anchor="middle" class="hub-label">AI Analysis</text>
+        <text x="410" y="141" text-anchor="middle" class="hub-label">Engine</text>
+      </svg>
+    </div>
+
+    <div class="insight-stack">
+      <div class="insight-card">
+        <div class="mark">1</div>
+        <div class="body">
+          <div class="kicker">Center of gravity</div>
+          <p>The center of gravity is <b>(1) the platform integration/entry‑point model</b> and <b>(2) the AI analysis engine</b> — everything else (branding, tiering, dashboard) hangs off those two. User's chosen next step: research how the AI engine actually works before locking Phase 1 scope, using addendum.md's existing Rekognition/Bedrock/SageMaker direction as a starting point to validate against the narrower single‑contractor scope, not a blank page.</p>
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="mark">2</div>
+        <div class="body">
+          <div class="kicker">One principle, not two decisions</div>
+          <p>Speed‑boundary + accuracy‑protection is one design principle — the untimed checklist capture exists so the AI clock never has to trade accuracy for speed — not two separate decisions.</p>
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="mark">3</div>
+        <div class="body">
+          <div class="kicker">Independently reinvented, twice</div>
+          <p>AI‑determined urgency tags and post‑diagnosis social proof (reviews/past jobs) were each independently invented by two different techniques — a signal they're structural, not nice‑to‑haves.</p>
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="mark">4</div>
+        <div class="body">
+          <div class="kicker">The roadmap was hiding in plain sight</div>
+          <p>The entry‑point parameter's option values — redirect‑to‑hosted‑page → platform‑side discovery/directory → tiering‑on‑discovery — already form the phased roadmap from single‑contractor widget to fuller platform.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Brainstorm keepsake · Toast‑style single‑contractor embeddable AI intake widget — Phase 1 scope<br>
+    Session status: complete · Facilitated session, logged 2026‑08‑12 23:05
+  </footer>
+
+</div>
+
+<script>
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){
+      els.forEach(function(e){ e.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.12, rootMargin:'0px 0px -60px 0px'});
+    els.forEach(function(e){ io.observe(e); });
+  })();
+</script>
+</body>
+</html>
